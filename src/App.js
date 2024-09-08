@@ -8,8 +8,10 @@ function App() {
   const [displayGroupName, setDisplayGroupName] = useState("");
   const [isInputValid, setIsInputValid] = useState(true);
   const [masterDisplayGroup, setMasterDisplayGroup] = useState([
-    "POS Home Screen",
+    { displayGroupName: "POS Home Screen", selectedValue: "POS Home Screen" },
   ]);
+  const [selectedValue, setSelectedValue] = useState("POS Home Screen");
+  const [isExist, setIsExist] = useState(false);
 
   const handleInput = (e) => {
     const name = e.target.value.trim();
@@ -22,12 +24,36 @@ function App() {
       setIsInputValid(false);
       return;
     }
-    setDisplayGroupModal(false);
-    setMasterDisplayGroup((prev) => [...prev, displayGroupName]);
-    setDisplayGroupName("");
+    const exist = masterDisplayGroup.some(
+      (group) => group.displayGroupName == displayGroupName
+    );
+    if (exist) {
+      setIsExist(true);
+      return;
+    } else {
+      setDisplayGroupModal(false);
+      setMasterDisplayGroup((prev) => [
+        ...prev,
+        { displayGroupName, selectedValue },
+      ]);
+      setDisplayGroupName("");
+    }
   };
+
+  const handleChange = (event) => {
+    setSelectedValue(event.target.id);
+  };
+
+  const deleteDisplayGroup = (groupName) => {
+    setMasterDisplayGroup((prev) =>
+      prev.filter((group) => group.displayGroupName != groupName)
+    );
+    console.log(masterDisplayGroup.displayGroupName);
+  };
+
   return (
     <div className="App">
+      {console.log(masterDisplayGroup)}
       <div className="menuBar">
         <div
           style={{
@@ -67,7 +93,7 @@ function App() {
                       <input
                         type="text"
                         className={`form-control ${
-                          !isInputValid ? "is-invalid" : ""
+                          !isInputValid || isExist ? "is-invalid" : ""
                         }`}
                         placeholder="Enter Display Group Name"
                         aria-label="displaygroupname"
@@ -81,6 +107,57 @@ function App() {
                           Display Group Name cannot be empty.
                         </div>
                       )}
+                      {isExist && (
+                        <div className="invalid-feedback">
+                          Display Group Already Exists.
+                        </div>
+                      )}
+                    </div>
+                    <div style={{ display: "flex" }}>
+                      <span className="radioTitle">Show In</span>
+                      <div className="radioContainer">
+                        <div className="form-check pd5">
+                          <input
+                            className="form-check-input"
+                            type="radio"
+                            name="flexRadioDefault"
+                            id="POS Home Screen"
+                            checked={selectedValue === "POS Home Screen"}
+                            onChange={handleChange}
+                          />
+                          <label
+                            className="form-check-label"
+                            htmlFor="POS Home Screen"
+                          >
+                            POS Home Screen
+                          </label>
+                        </div>
+                        {masterDisplayGroup.map((value, key) => {
+                          if (value.displayGroupName !== "POS Home Screen") {
+                            return (
+                              <div className="form-check pd5" key={key}>
+                                <input
+                                  className="form-check-input"
+                                  type="radio"
+                                  name="flexRadioDefault"
+                                  id={value.displayGroupName}
+                                  checked={
+                                    selectedValue === value.displayGroupName
+                                  }
+                                  onChange={handleChange}
+                                />
+                                <label
+                                  className="form-check-label"
+                                  htmlFor={value.displayGroupName}
+                                >
+                                  {value.displayGroupName}
+                                </label>
+                              </div>
+                            );
+                          }
+                          return null;
+                        })}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -109,10 +186,44 @@ function App() {
       <div className="mainGrid">
         {masterDisplayGroup.map((value, index) => {
           return (
-            <div style={{ width: "100%" }}>
-              <div className="displayName">{value}</div>
+            <div style={{ width: "100%" }} key={index}>
+              <div className="displayName">
+                {value.displayGroupName}{" "}
+                {value.displayGroupName != "POS Home Screen" ? (
+                  <span>
+                    <img
+                      src="/delete.png"
+                      alt="Delete"
+                      style={{
+                        cursor: "pointer",
+                        float: "right",
+                        marginRight: "1rem",
+                        paddingTop: "3px",
+                      }}
+                      onClick={() => deleteDisplayGroup(value.displayGroupName)}
+                    />
+                  </span>
+                ) : (
+                  ""
+                )}
+                {value.selectedValue != "POS Home Screen" ? (
+                  <span> ( {value.selectedValue} ) </span>
+                ) : (
+                  <span></span>
+                )}{" "}
+              </div>
               <div className="itemContainer">
-                <div className="itemDiv"></div>
+                <div className="itemDiv">
+                  <div style={{ paddingTop: "0.3rem" }}>
+                    <span
+                      style={{ marginRight: "0.3rem", paddingLeft: "0.3rem" }}
+                    >
+                      1.
+                    </span>
+                    Chai <span style={{ float: "right" }}>Del</span>
+                  </div>
+                  <hr style={{ marginBottom: "0px", marginTop: "0.3rem" }} />
+                </div>
                 <div
                   className="addItem"
                   style={{
