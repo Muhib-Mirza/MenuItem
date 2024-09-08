@@ -12,6 +12,9 @@ function App() {
   ]);
   const [selectedValue, setSelectedValue] = useState("POS Home Screen");
   const [isExist, setIsExist] = useState(false);
+  const [items, setItems] = useState({
+    "POS Home Screen": ["Chai"], // Initial item for POS Home Screen
+  });
 
   const handleInput = (e) => {
     const name = e.target.value.trim();
@@ -48,12 +51,22 @@ function App() {
     setMasterDisplayGroup((prev) =>
       prev.filter((group) => group.displayGroupName != groupName)
     );
-    console.log(masterDisplayGroup.displayGroupName);
+    setItems((prev) => {
+      const newItems = { ...prev };
+      delete newItems[groupName]; // Remove items associated with the deleted group
+      return newItems;
+    });
+  };
+
+  const deleteItem = (item, displayGroup) => {
+    setItems((prev) => ({
+      ...prev,
+      [displayGroup]: prev[displayGroup].filter((name) => name != item),
+    }));
   };
 
   return (
     <div className="App">
-      {console.log(masterDisplayGroup)}
       <div className="menuBar">
         <div
           style={{
@@ -213,17 +226,41 @@ function App() {
                 )}{" "}
               </div>
               <div className="itemContainer">
-                <div className="itemDiv">
-                  <div style={{ paddingTop: "0.3rem" }}>
-                    <span
-                      style={{ marginRight: "0.3rem", paddingLeft: "0.3rem" }}
-                    >
-                      1.
-                    </span>
-                    Chai <span style={{ float: "right" }}>Del</span>
-                  </div>
-                  <hr style={{ marginBottom: "0px", marginTop: "0.3rem" }} />
-                </div>
+                {items[value.displayGroupName].map((item, key) => {
+                  return (
+                    <div className="itemDiv">
+                      <div style={{ paddingTop: "0.3rem" }}>
+                        <span
+                          style={{
+                            marginRight: "0.3rem",
+                            paddingLeft: "0.3rem",
+                          }}
+                        >
+                          1.
+                        </span>
+                        {item}
+                        <span style={{ float: "right" }}>
+                          <img
+                            src="/delete.png"
+                            alt="Delete"
+                            style={{
+                              cursor: "pointer",
+                              float: "right",
+                              marginRight: "1rem",
+                              paddingTop: "3px",
+                            }}
+                            onClick={() =>
+                              deleteItem(item, value.displayGroupName)
+                            }
+                          />
+                        </span>
+                      </div>
+                      <hr
+                        style={{ marginBottom: "0px", marginTop: "0.3rem" }}
+                      />
+                    </div>
+                  );
+                })}
                 <div
                   className="addItem"
                   style={{
