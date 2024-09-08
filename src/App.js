@@ -39,6 +39,10 @@ function App() {
         ...prev,
         { displayGroupName, selectedValue },
       ]);
+      setItems((prev) => ({
+        ...prev,
+        [displayGroupName]: [], // Initialize an empty array for the new display group
+      }));
       setDisplayGroupName("");
     }
   };
@@ -202,23 +206,41 @@ function App() {
             <div style={{ width: "100%" }} key={index}>
               <div className="displayName">
                 {value.displayGroupName}{" "}
-                {value.displayGroupName != "POS Home Screen" ? (
-                  <span>
-                    <img
-                      src="/delete.png"
-                      alt="Delete"
-                      style={{
-                        cursor: "pointer",
-                        float: "right",
-                        marginRight: "1rem",
-                        paddingTop: "3px",
-                      }}
-                      onClick={() => deleteDisplayGroup(value.displayGroupName)}
-                    />
+                <span
+                  style={{
+                    float: "right",
+                    marginRight: "1.5rem",
+                    paddingTop: "3px",
+                  }}
+                >
+                  <span
+                    style={{
+                      cursor: "pointer",
+                      marginRight: "0.4rem",
+                    }}
+                  >
+                    Add Item
                   </span>
-                ) : (
-                  ""
-                )}
+                  {value.displayGroupName != "POS Home Screen" ? (
+                    <span>
+                      <span>
+                        <img
+                          src="/delete.png"
+                          alt="Delete"
+                          style={{
+                            cursor: "pointer",
+                            paddingBottom: "0.2rem",
+                          }}
+                          onClick={() =>
+                            deleteDisplayGroup(value.displayGroupName)
+                          }
+                        />
+                      </span>
+                    </span>
+                  ) : (
+                    ""
+                  )}
+                </span>
                 {value.selectedValue != "POS Home Screen" ? (
                   <span> ( {value.selectedValue} ) </span>
                 ) : (
